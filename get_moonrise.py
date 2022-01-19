@@ -6,6 +6,7 @@ This is called by the crontab regularly to generate annual data.
 from datetime import date, timedelta
 import os
 import requests
+from dotenv import load_dotenv
 
 
 def main():
@@ -27,12 +28,12 @@ def main():
     data_path = make_path('data')
 
     with open('%s/%s.csv' % (data_path, next_year), 'wb') as file:
-
+        load_dotenv()
         for single_date in daterange(start_date, end_date):
 
             date_string = single_date.strftime("%Y-%m-%d")
             params = (
-                ('apiKey', 'e4937f61b2f445498d7db27f407db18e'),
+                ('apiKey', os.getenv('KEY')),
                 ('date', date_string),
                 ('lat', lat),
                 ('long', long)
@@ -49,15 +50,15 @@ def daterange(start, end):
     '''
     Creates a generator for a range of dates.
     '''
-    for n in range(int((end - start).days)):
-        yield start + timedelta(n)
+    for days in range(int((end - start).days)):
+        yield start + timedelta(days)
 
 
-def make_path(d):
+def make_path(sub_path):
     '''
     Creates directory under the root directory.
     '''
-    data_path = os.path.dirname(os.path.abspath(__file__)) + '/' + d
+    data_path = os.path.dirname(os.path.abspath(__file__)) + '/' + sub_path
 
     if not os.path.exists(data_path):
         os.makedirs(data_path)

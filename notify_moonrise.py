@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, date
 import os
 import random
 import requests
+from dotenv import load_dotenv
 
 
 def main():
@@ -19,6 +20,8 @@ def main():
 
     notify_start = '17:00'
     notify_end = '21:30'
+
+    # sends announcement if: (now - m_max) < moon_rise < (now - m_min)
     m_min = 10
     m_max = 20
 
@@ -62,28 +65,28 @@ def get_today_moonrise_datetime(date_string):
         return False
 
 
-def notify_moonrise(time):
+def notify_moonrise(the_time):
     '''
     Sends random notification to Google Assistant.
     '''
-    print('sending')
+    load_dotenv()
+    hour = the_time.hour
+    minute = the_time.minute
+
     messages = [
-        'Look! A fairly super moon has risen at %s:%s.' % (
-            time.hour, time.minute),
-        'Did you know the moon has just risen at %s:%s?' % (
-            time.hour, time.minute),
-        'Pssst, the moon just rose at %s:%s!' % (time.hour, time.minute),
-        'Watch out for the rising moon! Today\'s moonrise was at %s:%s.' % (
-            time.hour, time.minute),
-        'Slipping softly through the sky, at %s:%s the moon shall rise.' % (
-            time.hour, time.minute),
-        'Behold! The mighty moon has risen at %s:%s.' % (
-            time.hour, time.minute)
+        'Look! A fairly super moon has risen at %s:%s.' % (hour, minute),
+        'Did you know the moon has just risen at %s:%s?' % (hour, minute),
+        'Pssst, the moon just rose at %s:%s!' % (hour, minute),
+        'Hey you,today\'s moonrise was at %s:%s.' % (hour, minute),
+        'At %s:%s the moon shall rise.' % (hour, minute),
+        'Behold! The mighty moon has risen at %s:%s.' % (hour, minute)
     ]
 
     headers = {'Content-Type': 'application/json'}
-    data = '{"command":"%s", "user":"hktang", "broadcast":true}' % random.choice(
-        messages)
+
+    data = '{"command":"%s", "user":"%s", "broadcast":true}' % (
+        random.choice(messages), os.getenv('GA_USER'))
+
     url = 'http://127.0.0.1:3000/assistant'
 
     response = requests.post(url, headers=headers, data=data)

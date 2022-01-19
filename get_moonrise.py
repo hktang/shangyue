@@ -14,8 +14,7 @@ def main():
     saves data in the 'data' directory.
     '''
 
-    # Latitude and Longitude of Rokko Island Higashi waterfront
-
+    # Coordinates of a reasonably close-by location.
     lat = 34.6906934556
     long = 135.2785830232
 
